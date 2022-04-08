@@ -1,0 +1,61 @@
+# CQRS 포스팅을 위한 Docker Compost
+# 필요 Infra
+# 1. MariaDB : Command DB
+# 2. MongoDB : Query Master DB
+# 3. Redis : Query Cache DB
+# 4. RabbitMQ : Message Broker
+
+version: '3.7'
+services:
+  rabbitmq:
+    image: 'rabbitmq:3-management-alpine'
+    container_name: rabbitmq-demo
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "RabbitMQ-My-Cookies"
+      RABBITMQ_DEFAULT_USER: "admin"
+      RABBITMQ_DEFAULT_PASS: "admin"
+  redis:
+    image: redis:alpine
+    command: redis-server --port 6379
+    container_name: redis_demo
+    hostname: redis_demo
+    labels:
+      - "name=redis"
+      - "mode=standalone"
+    ports:
+      - 6379:6379
+    networks:
+      - cqrs-demo
+  mariaDB:
+    image: mariadb:10
+    container_name: mariadb_demo
+    hostname: mariadb_demo
+    ports:
+      - 3306:3306
+    volumes:
+      - ./db/conf.d:/etc/mysql/conf.d
+      - ./db/data:/var/lib/mysql
+      - ./db/initdb.d:/docker-entrypoint-initdb.d
+    env_file: .env
+    environment:
+      TZ: Asia/Seoul
+    networks:
+      - cqrs-demo
+    restart: always
+  mongoDB:
+    image: mongo
+    ports:
+      - "${MONGO_PORT}:27017"
+    volumes:
+      - ./mongodb:/data/db
+    container_name: mongo_demo
+    hostname: mongo_demo
+    networks:
+      - cqrs-demo
+    env_file: .env
+
+networks:
+  cqrs-demo:
