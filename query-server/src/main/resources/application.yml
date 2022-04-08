@@ -1,0 +1,15 @@
+
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: cqrs
+      username: root
+      password: root
+      authentication-database: admin
+  redis:
+    host: localhost
+    port: 6379
+server:
+  port: 8083
