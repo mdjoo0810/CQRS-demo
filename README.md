@@ -1,4 +1,4 @@
-# CQRS Demo Application
+# CQRS Demo Application [For Blog]
 
 ## Docker Compose
 Project Root 에 `docker-compose.yml` 이 있음.
